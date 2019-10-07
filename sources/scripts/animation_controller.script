@@ -1,0 +1,49 @@
+require "modules.common"
+
+local function isAnimExists(anim)
+	-- Try to check anim existance
+	return true
+end
+
+-- TODO: looks like should be placed in a separate module (observer pattern)
+local function notify(observers, message_id, message)
+	for i, obs in pairs(observers) do
+		msg.post(i, message_id, message)
+	end
+end
+
+
+local function request(self, animId, bForceRestart)
+	assert(isAnimExists(anim), "Anim " .. animId .. " doesn't exists!")
+	print("Request anim: " .. animId)
+	if animId == self.currentAnimId and not bForceRestart then
+		return
+	end
+
+	if self.currentAnimId then -- if playing anim now, it will be interrupted
+		notify(self.observers, msgtype_anim_event, { id = anim_interrupted, animId = self.currentAnimId })
+	end
+	notify(self.observers, msgtype_anim_event, { id = anim_started, animId = animId })
+
+	-- WARNING: can't check that hAnim is exists! Register anim list manually?
+	msg.post("#sprite", "play_animation", { id = animId })
+	self.currentAnimId = animId
+end
+
+function init(self)
+	self.observers = {}
+	self.currentAnimId = nil
+end
+
+function on_message(self, message_id, message, sender)
+	if message_id == hash("animation_done") then
+		notify(self.observers, msgtype_anim_event, { id = anim_finished, animId = self.currentAnimId })
+		self.currentAnimId = nil
+	elseif message_id == hash("subscribe_anim") then
+		self.observers[sender] = true
+	elseif message_id == hash("unsubscribe_anim") then
+		self.observers[sender] = nil
+	elseif message_id == hash("anim_request") then
+		request(self, message.animId, message.forced)
+	end
+end

@@ -1,0 +1,13 @@
+go.property("baseDamage", 50)
+go.property("preparationTime", 0.5)
+go.property("relaxTime", 0.5)
+-- sword, lance, bow, whip - weapon owner should to play different animations
+-- for all these types of weapons
+go.property("ownerAnimSet", "sword")
+
+local function UpdateAttackPoint(self, dir)
+	--local localAttackPoint = vmath.vector3(dir * 12, -3, 0)
+	--go.set_position(localAttackPoint, "attackTriggerArea")
+end
+
+local function lol() end
