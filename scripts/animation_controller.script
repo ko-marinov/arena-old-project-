@@ -35,7 +35,7 @@ end
 
 function on_message(self, message_id, message, sender)
 	if message_id == hash("animation_done") then
-		notify(self.observers, cmn.msgtype_anim_event, { id = anim_finished, animId = self.currentAnimId })
+		notify(self.observers, cmn.msgtype_anim_event, { id = cmn.anim_finished, animId = self.currentAnimId })
 		self.currentAnimId = nil
 	elseif message_id == hash("subscribe_anim") then
 		self.observers[sender] = true

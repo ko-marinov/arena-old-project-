@@ -6,7 +6,7 @@ function init(self)
 end
 
 function on_message(self, message_id, message, sender)
-	if message_id == cmn.msgtype_trigger_response and message.other_group == ground_group then
+	if message_id == msgtype_trigger_response and message.other_group == ground_group then
 		if message.enter then
 			assert(not self.isGrounded)
 			self.isGrounded = true

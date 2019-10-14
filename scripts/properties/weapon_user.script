@@ -19,7 +19,7 @@ local function RequestAttack(self)
 	assert(self.timer == timer.INVALID_TIMER_HANDLE)
 	self.isAttackAllowed = false
 	self.timer = timer.delay(self.attackPeriod, false, AllowAttacking)
-	msg.post(".", msgtype_trigger, { id = trigger_attack } )
+	msg.post(".", cmn.msgtype_trigger, { id = cmn.trigger_attack } )
 end
 
 function init(self)
