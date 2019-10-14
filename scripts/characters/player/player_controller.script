@@ -1,5 +1,3 @@
-require "modules.common"
-
 go.property("gravity", -700)
 
 local ROLLING_TIME = 0.3
@@ -10,13 +8,13 @@ local function StopRoll(self, handler, time_elapsed)
 	self.rollTimer = timer.INVALID_TIMER_HANDLE
 	self.inRoll = false
 	msg.post("#property_health", hash("vulnerable"))
-	msg.post(".", msgtype_tag, { id = tag_roll, value = false })
+	msg.post(".", cmn.msgtype_tag, { id = cmn.tag_roll, value = false })
 	self.mv.StopRoll()
 end
 
 local function StartRoll(self)
 	msg.post("#property_health", hash("invulnerable"))
-	msg.post(".", msgtype_tag, { id = tag_roll, value = true })
+	msg.post(".", cmn.msgtype_tag, { id = cmn.tag_roll, value = true })
 	self.inRoll = true
 	assert(self.rollTimer == timer.INVALID_TIMER_HANDLE)
 	self.rollTimer = timer.delay(ROLLING_TIME, false, StopRoll)
@@ -52,9 +50,9 @@ function on_message(self, message_id, message, sender)
 				msg.post("#property_health", hash("damage"), { damage = 1 })
 			end
 		end]]
-	elseif message_id == msgtype_param then
-		if message.id == param_roll_input and message.value and not self.inRoll then
-			msg.post(".", msgtype_trigger, { id = trigger_roll })
+	elseif message_id == cmn.msgtype_param then
+		if message.id == cmn.param_roll_input and message.value and not self.inRoll then
+			msg.post(".", cmn.msgtype_trigger, { id = cmn.trigger_roll })
 			StartRoll(self)
 		end
 	end

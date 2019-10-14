@@ -4,8 +4,6 @@ go.property("weaponStatsUid", hash("sword"))
 -- TODO: Eliminate enemy_animation_controller
 --       Try to customize by property only
 
-local weapons_dt = require "modules.datatables.weapons_dt"
-
 local moduleAnimFsm = require "modules.fsm.animation.player"
 
 function init(self)
@@ -15,7 +13,7 @@ function init(self)
 		end
 	}
 	self.fsm = moduleAnimFsm.new(self.animController)
-	self.fsm.SetWeaponStats(weapons_dt[self.weaponStatsUid])
+	self.fsm.SetWeaponStats(weaponsDataTable[self.weaponStatsUid])
 	msg.post(".", "subscribe_anim")
 end
 

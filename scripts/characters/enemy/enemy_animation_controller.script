@@ -6,13 +6,11 @@ go.property("weaponStatsUid", hash("sword"))
 
 -- TODO: Too similar to player_animation_controller!
 
-local weapons_dt = require "modules.datatables.weapons_dt"
-
 local moduleAnimFsm = require "modules.fsm.animation.enemy"
 
 function init(self)
 	self.fsm = moduleAnimFsm.new(self.animController)
-	self.fsm.SetWeaponStats(weapons_dt[self.weaponStatsUid])
+	self.fsm.SetWeaponStats(weaponsDataTable[self.weaponStatsUid])
 	msg.post(".", "subscribe_anim")
 end
 

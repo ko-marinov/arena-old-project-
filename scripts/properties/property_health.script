@@ -1,8 +1,6 @@
 go.property("health", 100)
 go.property("invulPeriod", 2)
 
-require "modules.common"
-
 local function InvulTimerCallback(self, handle, time_elapsed)
 	self.vulnerable = true
 end
@@ -14,11 +12,11 @@ end
 
 function on_message(self, message_id, message, sender)
 	if message_id == hash("damage") and self.vulnerable then
-		msg.post(".", msgtype_trigger, { id = trigger_damage })
+		msg.post(".", cmn.msgtype_trigger, { id = cmn.trigger_damage })
 		self.health = self.health - message.damage
 		if self.health <= 0 then
 			self.health = 0
-			msg.post(".", msgtype_tag, { id = tag_dead, value = true })
+			msg.post(".", cmn.msgtype_tag, { id = cmn.tag_dead, value = true })
 		else
 			self.vulnerable = false
 			self.invul_timer = timer.delay(self.invulPeriod, false, InvulTimerCallback)
@@ -27,10 +25,10 @@ function on_message(self, message_id, message, sender)
 		self.vulnerable = true
 	elseif message_id == hash("invulnerable") then
 		self.vulnerable = false
-	elseif message_id == msgtype_check_tag then
-		if message.id == tag_dead then
+	elseif message_id == cmn.msgtype_check_tag then
+		if message.id == cmn.tag_dead then
 			assert(self.health >= 0)
-			msg.post(sender, msgtype_tag, { id = tag_dead, value = (self.health == 0) })
+			msg.post(sender, cmn.msgtype_tag, { id = cmn.tag_dead, value = (self.health == 0) })
 		end
 	elseif message_id == hash("gethp") then
 		msg.post(sender, hash("ongethp"), { hp = self.health })

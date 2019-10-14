@@ -1,9 +1,5 @@
 go.property("weaponUid", hash("sword"))
 
-require "modules.common"
-
-local weaponsDataTable = require "modules.datatables.weapons_dt"
-
 local function GetCurrentWeaponUid()
 	-- TODO: Get weapon from character settings, inventory, etc.
 	return go.get("#", "weaponUid")
@@ -35,7 +31,7 @@ function init(self)
 end
 
 function on_message(self, message_id, message, sender)
-	if message_id == msgtype_param and message.id == param_attack_input then
+	if message_id == cmn.msgtype_param and message.id == cmn.param_attack_input then
 		if message.value and self.isAttackAllowed then
 			RequestAttack(self)
 		end

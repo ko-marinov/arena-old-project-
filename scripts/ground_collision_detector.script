@@ -1,5 +1,3 @@
-require "modules.common"
-
 local msgtype_trigger_response = hash("trigger_response")
 local ground_group = hash("level")
 
@@ -8,7 +6,7 @@ function init(self)
 end
 
 function on_message(self, message_id, message, sender)
-	if message_id == msgtype_trigger_response and message.other_group == ground_group then
+	if message_id == cmn.msgtype_trigger_response and message.other_group == ground_group then
 		if message.enter then
 			assert(not self.isGrounded)
 			self.isGrounded = true
@@ -19,10 +17,10 @@ function on_message(self, message_id, message, sender)
 			-- print("[Ground Check]: false")
 		end
 		-- TODO: eliminate hardcoded 'body' string
-		msg.post("body", msgtype_tag, { id = tag_grounded, value = self.isGrounded })
-	elseif message_id == msgtype_check_tag then
-		if message.id == tag_grounded then
-			msg.post(sender, msgtype_tag, { id = tag_grounded, value = self.isGrounded })
+		msg.post("body", cmn.msgtype_tag, { id = cmn.tag_grounded, value = self.isGrounded })
+	elseif message_id == cmn.msgtype_check_tag then
+		if message.id == cmn.tag_grounded then
+			msg.post(sender, cmn.msgtype_tag, { id = cmn.tag_grounded, value = self.isGrounded })
 		end
 	end
 end

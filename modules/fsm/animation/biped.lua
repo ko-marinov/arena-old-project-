@@ -1,4 +1,3 @@
-require "modules.common"
 local moduleFsm = require "modules.fsm"
 local moduleAttackFsm = require "modules.fsm.attack.attack"
 
@@ -51,13 +50,13 @@ function M.new(anim_controller, dbgName)
 	})
 
 	-- fsm extension --
-	fsm.blackboard					= {}
-	fsm.blackboard[param_move]		= 0
-	fsm.blackboard[param_vvel]		= 0
-	fsm.blackboard[tag_grounded]	= false
-	fsm.blackboard[tag_attack]		= false
-	fsm.blackboard[tag_hurt]		= false
-	fsm.blackboard[tag_dead]		= false
+	fsm.blackboard						= {}
+	fsm.blackboard[cmn.param_move]		= 0
+	fsm.blackboard[cmn.param_vvel]		= 0
+	fsm.blackboard[cmn.tag_grounded]	= false
+	fsm.blackboard[cmn.tag_attack]		= false
+	fsm.blackboard[cmn.tag_hurt]		= false
+	fsm.blackboard[cmn.tag_dead]		= false
 
 	--[[
 	local weaponStats = {
@@ -104,8 +103,8 @@ function M.new(anim_controller, dbgName)
 
 	-- TODO: watch out, copypaste from INJURY
 	fsm.onmessageROLL = function(message_id, message, sender)
-		if message_id == msgtype_anim_event then
-			if message.id == anim_finished	and message.animId == hash("roll") then
+		if message_id == cmn.msgtype_anim_event then
+			if message.id == cmn.anim_finished	and message.animId == hash("roll") then
 				fsm:toidle()
 			end
 		end
@@ -119,7 +118,7 @@ function M.new(anim_controller, dbgName)
 	-- on enter state INJURY
 	fsm.onINJURY = function(event, from, to)
 		playAnim(fsm, hash("hurt"))
-		msg.post(".", msgtype_tag, { id = tag_hurt, value = true })	-- TODO: Post tags from anim fsm is smells?!
+		msg.post(".", cmn.msgtype_tag, { id = cmn.tag_hurt, value = true })	-- TODO: Post tags from anim fsm is smells?!
 	end
 
 	fsm.onbeforetakedamage = function(event, from, to)
@@ -131,9 +130,9 @@ function M.new(anim_controller, dbgName)
 	end
 
 	fsm.onmessageINJURY = function(message_id, message, sender)
-		if message_id == msgtype_anim_event then
-			if message.id == anim_finished	and message.animId == hash("hurt") then
-				msg.post(".", msgtype_tag, { id = tag_hurt, value = false })
+		if message_id == cmn.msgtype_anim_event then
+			if message.id == cmn.anim_finished	and message.animId == hash("hurt") then
+				msg.post(".", cmn.msgtype_tag, { id = cmn.tag_hurt, value = false })
 				fsm:toidle()
 			end
 		end
@@ -162,21 +161,21 @@ function M.new(anim_controller, dbgName)
 	end
 	
 	fsm.tryDie = function()
-		if fsm.blackboard[tag_dead] then
+		if fsm.blackboard[cmn.tag_dead] then
 			fsm.abortMelee()
 			fsm:die()
 		end
 	end
 
 	fsm.tryTakeDamage = function()
-		if fsm.blackboard[tag_hurt] then
+		if fsm.blackboard[cmn.tag_hurt] then
 			fsm.abortMelee()
 			fsm:takedamage()
 		end
 	end
 
 	fsm.updateAirborne = function()
-		if fsm.blackboard[tag_grounded] then 
+		if fsm.blackboard[cmn.tag_grounded] then 
 			fsm:land()
 		else
 			fsm:fall()
@@ -184,7 +183,7 @@ function M.new(anim_controller, dbgName)
 	end
 
 	fsm.updateMovement = function()
-		if fsm.blackboard[param_move] == 0 then
+		if fsm.blackboard[cmn.param_move] == 0 then
 			fsm:stop()
 		else
 			fsm:run()
@@ -200,8 +199,8 @@ function M.new(anim_controller, dbgName)
 	end
 
 	fsm.updateDirection = function()
-		if fsm.blackboard[param_move] ~= 0 then
-			sprite.set_hflip("#sprite", fsm.blackboard[param_move] < 0)
+		if fsm.blackboard[cmn.param_move] ~= 0 then
+			sprite.set_hflip("#sprite", fsm.blackboard[cmn.param_move] < 0)
 		end
 	end
 
@@ -221,18 +220,18 @@ function M.new(anim_controller, dbgName)
 	fsm.on_message = function(message_id, message, sender)
 		if message_id == hash("weapon_changed") then
 			fsm.SetWeaponStats(message.weaponStats)
-		elseif message_id == msgtype_param or message_id == msgtype_tag then
+		elseif message_id == cmn.msgtype_param or message_id == cmn.msgtype_tag then
 			if fsm.blackboard[message.id] ~= nil then		-- to avoid blackboard polution
 				assert(message.value ~= nil)
 				fsm.blackboard[message.id] = message.value
 			end
 		else
-			if message_id == msgtype_trigger then
-				if message.id == trigger_attack then
+			if message_id == cmn.msgtype_trigger then
+				if message.id == cmn.trigger_attack then
 					fsm:attack()
-				elseif message.id == trigger_damage then
+				elseif message.id == cmn.trigger_damage then
 					fsm:takedamage()
-				elseif message.id == trigger_roll then
+				elseif message.id == cmn.trigger_roll then
 					fsm:roll()
 				end
 			end

@@ -1,4 +1,3 @@
-require "modules.common"
 local moduleFsm = require "modules.fsm"
 
 local function playAnim(fsm, animId)
@@ -72,7 +71,7 @@ function M.new(anim_controller, weaponStats, dbgName)
 	-- INTERNAL LOGIC -- --TODO: Mark some code as private by comments - smells
 
 	fsm.onIDLE = function(event, from, to)
-		msg.post(".", msgtype_tag, { id = tag_attack, value = false })
+		msg.post(".", cmn.msgtype_tag, { id = cmn.tag_attack, value = false })
 	end
 
 	fsm.onPREPARATION = function(event, from, to)
@@ -87,7 +86,7 @@ function M.new(anim_controller, weaponStats, dbgName)
 		assert(fsm.prepTimer == timer.INVALID_TIMER_HANDLE)
 		fsm.prepTimer = timer.delay(fsm.weaponStats.prepTime, false, fsm.EnterHitState)
 		
-		msg.post(".", msgtype_tag, { id = tag_attack, value = true })
+		msg.post(".", cmn.msgtype_tag, { id = cmn.tag_attack, value = true })
 	end
 
 	fsm.onHIT = function(event, from, to)
@@ -143,7 +142,7 @@ function M.new(anim_controller, weaponStats, dbgName)
 	end
 	
 	fsm.on_message = function(message_id, message, sender)
-		if message_id == msgtype_param or message_id == msgtype_tag then
+		if message_id == cmn.msgtype_param or message_id == cmn.msgtype_tag then
 			if fsm.blackboard[message.id] ~= nil then		-- to avoid blackboard polution
 				assert(message.value ~= nil)
 				fsm.blackboard[message.id] = message.value

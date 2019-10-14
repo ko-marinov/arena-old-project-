@@ -1,7 +1,5 @@
 local M = {}
 
-require "modules.common"
-
 local MAX_HSPEED = 200
 local MAX_VSPEED = 200
 local JUMP_IMPULSE = 250
@@ -107,7 +105,7 @@ function M.new(g, collisionBoxOffset, collisionBoxSize)
 	mv.update = function(dt)
 		update_velocity(mv, dt)
 		go.set_position(go.get_position() + mv.velocity * dt)
-		msg.post(".", msgtype_param, { id = param_vvel, value = mv.velocity.y })
+		msg.post(".", cmn.msgtype_param, { id = param_vvel, value = mv.velocity.y })
 
 		mv.correction = vmath.vector3()
 		mv.frame_num = mv.frame_num + 1
@@ -118,21 +116,21 @@ function M.new(g, collisionBoxOffset, collisionBoxSize)
 			if message.group == hash("level") then
 				handle_obstacle_contact(mv, message.position, message.normal, message.distance)
 			end
-		elseif message_id == msgtype_param then
-			if message.id == param_move then
+		elseif message_id == cmn.msgtype_param then
+			if message.id == cmn.param_move then
 				mv.dir = message.value
 				if mv.dir ~= 0 then
 					mv.look_dir = mv.dir
 				end
 			end
-		elseif message_id == msgtype_tag then
-			if message.id == tag_grounded then
+		elseif message_id == cmn.msgtype_tag then
+			if message.id == cmn.tag_grounded then
 				mv.ground_contact = message.value
 			end
-		elseif message_id == msgtype_trigger then
-			if message.id == trigger_damage then
+		elseif message_id == cmn.msgtype_trigger then
+			if message.id == cmn.trigger_damage then
 				-- handle on damage received
-			elseif message.id == trigger_jump then
+			elseif message.id == cmn.trigger_jump then
 				mv.velocity.y = JUMP_IMPULSE
 			end
 		elseif message_id == hash("die") then

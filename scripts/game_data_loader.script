@@ -1,0 +1,2 @@
+cmn = require("modules.common")
+weaponsDataTable = require("modules.datatables.weapons_dt")
