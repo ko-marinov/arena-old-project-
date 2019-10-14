@@ -30,6 +30,7 @@ function init(self)
 	self.isAttackAllowed = true
 	self.timer = timer.INVALID_TIMER_HANDLE
 	self.weapon = weaponsDataTable[GetCurrentWeaponUid()]
+	assert(self.weapon ~= nil)
 	self.attackPeriod = self.weapon.prepTime + self.weapon.relaxTime
 end
 
@@ -38,5 +39,9 @@ function on_message(self, message_id, message, sender)
 		if message.value and self.isAttackAllowed then
 			RequestAttack(self)
 		end
+	elseif message_id == hash("start_damage") then
+		msg.post("weapon", "start_damage")
+	elseif message_id == hash("stop_damage") then
+		msg.post("weapon", "stop_damage")
 	end
 end
