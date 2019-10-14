@@ -1,0 +1,42 @@
+go.property("weaponUid", hash("sword"))
+
+require "modules.common"
+
+local weaponsDataTable = require "modules.datatables.weapons_dt"
+
+local function GetCurrentWeaponUid()
+	-- TODO: Get weapon from character settings, inventory, etc.
+	return go.get("#", "weaponUid")
+end
+
+local function updateAttackPoint(self, dir)
+	local localAttackPoint = vmath.vector3(dir * 12, -3, 0)
+	go.set_position(localAttackPoint, "attackTriggerArea")
+end
+
+local function AllowAttacking(self, handle, time_elapsed)
+	self.isAttackAllowed = true
+	self.timer = timer.INVALID_TIMER_HANDLE
+end
+
+local function RequestAttack(self)
+	assert(self.timer == timer.INVALID_TIMER_HANDLE)
+	self.isAttackAllowed = false
+	self.timer = timer.delay(self.attackPeriod, false, AllowAttacking)
+	msg.post(".", msgtype_trigger, { id = trigger_attack } )
+end
+
+function init(self)
+	self.isAttackAllowed = true
+	self.timer = timer.INVALID_TIMER_HANDLE
+	self.weapon = weaponsDataTable[GetCurrentWeaponUid()]
+	self.attackPeriod = self.weapon.prepTime + self.weapon.relaxTime
+end
+
+function on_message(self, message_id, message, sender)
+	if message_id == msgtype_param and message.id == param_attack_input then
+		if message.value and self.isAttackAllowed then
+			RequestAttack(self)
+		end
+	end
+end

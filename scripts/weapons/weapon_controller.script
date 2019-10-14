@@ -1,0 +1,52 @@
+go.property("weaponUid", hash("sword"))
+go.property("baseDamage", 50)
+go.property("preparationTime", 0.5)
+go.property("relaxTime", 0.5)
+-- sword, lance, bow, whip - weapon owner should to play different animations
+-- for all these types of weapons
+go.property("ownerAnimSet", "sword")
+
+--[[ TODO: should be updated by parent object? Weapon contains only offset (x, y)
+local function UpdateAttackPoint(self, dir)
+	local localAttackPoint = vmath.vector3(dir * 12, -3, 0)
+	go.set_position(localAttackPoint, "attackTriggerArea")
+end
+--]]
+
+local function process(self, go_id)
+	if self.collided_objects[go_id] then return end
+
+	self.collided_objects[go_id] = true
+	local url = msg.url()
+	url.path = go_id
+	url.fragment = "property_health"
+	msg.post(url, hash("damage"), { damage = self.damageDeal })
+end
+
+local function StartDamage(self)
+	self.collided_objects = {}
+	msg.post("#collisionobject", "enable")
+end
+
+local function StopDamage(self)
+	msg.post("#collisionobject", "disable")
+end
+
+function init(self)
+	self.collided_objects = {}
+	msg.post("#collisionobject", "disable")
+
+	--updateAttackPoint(self, 1)
+end
+
+function on_message(self, message_id, message, sender)
+	if message_id == hash("melee_collision") then
+		if message.enter then 
+			process(self, message.other_id) 
+		end
+	elseif message_id == hash("start_damage") then
+		StartDamage(self)
+	elseif message_id == hash("stop_damage") then
+		StopDamage(self)
+	end
+end

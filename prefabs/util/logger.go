@@ -1,6 +1,6 @@
 components {
   id: "logger"
-  component: "/sources/scripts/util/logger.script"
+  component: "/scripts/util/logger.script"
   position {
     x: 0.0
     y: 0.0

@@ -1,5 +1,4 @@
 go.property("damageDeal", 100)
-go.property("attackSpeed", 0.5)
 
 require "modules.common"
 

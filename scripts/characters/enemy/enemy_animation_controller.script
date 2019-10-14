@@ -1,0 +1,34 @@
+go.property("animController", msg.url())
+go.property("weaponStatsUid", hash("sword"))
+
+-- TODO: Eliminate enemy_animation_controller
+--       Try to customize by property only
+
+-- TODO: Too similar to player_animation_controller!
+
+local weapons_dt = require "modules.datatables.weapons_dt"
+
+local moduleAnimFsm = require "modules.fsm.animation.enemy"
+
+function init(self)
+	self.fsm = moduleAnimFsm.new(self.animController)
+	self.fsm.SetWeaponStats(weapons_dt[self.weaponStatsUid])
+	msg.post(".", "subscribe_anim")
+end
+
+function final(self)
+	msg.post(".", "unsubscribe_anim")
+end
+
+function update(self, dt)
+	self.fsm.update(dt)
+end
+
+function on_message(self, message_id, message, sender)
+	self.fsm.on_message(message_id, message, sender)
+end
+
+function on_reload(self)
+	-- Add reload-handling code here
+	-- Remove this function if not needed
+end

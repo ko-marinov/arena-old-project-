@@ -1,7 +1,10 @@
 --go.property("animController", msg.url())
+go.property("weaponStatsUid", hash("sword"))
 
 -- TODO: Eliminate enemy_animation_controller
 --       Try to customize by property only
+
+local weapons_dt = require "modules.datatables.weapons_dt"
 
 local moduleAnimFsm = require "modules.fsm.animation.player"
 
@@ -12,21 +15,7 @@ function init(self)
 		end
 	}
 	self.fsm = moduleAnimFsm.new(self.animController)
-	self.fsm.SetWeaponStats({
-		prepTime	= 0.5,									-- time before hit
-		relaxTime	= 0.5,									-- time after hit and before next hit
-		animSet 	= "sword",								-- set of owner's animations
-		animNum 	= 3,									-- number of animations in animation set
-		hitLogic	= function(relaxTransitionClbk, fsm)	-- actions to do on hit
-			local timerClbck = function(self, handle, time_elapsed)
-				msg.post(".", "stop_damage")
-				fsm[relaxTransitionClbk](fsm)
-			end
-
-			timer.delay(0.08, false, timerClbck)
-			msg.post(".", "start_damage")
-		end
-	})
+	self.fsm.SetWeaponStats(weapons_dt[self.weaponStatsUid])
 	msg.post(".", "subscribe_anim")
 end
 
